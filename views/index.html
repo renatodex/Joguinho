@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://craftyjs.com/release/0.3/crafty.js"></script>
+<script type="text/javascript" src="/scripts/joguinho.js"></script>
+<title>Joguinho, a lenda</title>
+<style>
+	body, html { margin:0; padding: 0; overflow:hidden; font-family:Arial; font-size:20px }
+	#cr-stage { border:2px solid black; margin:5px auto; color:white }
+	h1 {font-size:56px; text-align:center;}
+
+	#welcome {
+	  position: absolute;
+	  margin:45px 0px 0px 230px;
+	  z-index:100;
+	  display:none;
+	}
+
+	#crafty {
+		position:absolute;
+	}
+</style>
+</head>
+<body>
+	<h1>Joguinho, a lenda</h1>
+
+	<div id="welcome">
+		<div class="hero-label">Para entrar, diga seu nome:</div>
+		<div class="hero-field">
+			<input type="text" id="hero-name" />
+			<button id="form-submit">Entrar</button>
+		</div>
+	</div>
+
+	<button id="btn-list">Listar Herois Online no Console</button>
+	<button id="btn-newnpc">Criar novo npc</button>
+	<button id="btn-movenpc">Mover npc</button>
+</body>
+</html>
+
