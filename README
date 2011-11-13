@@ -1,0 +1,17 @@
+This project is a demonstration of how to use NodeJS and CraftJS to make a MMORPG game.
+NodeJS take cares of all server operations, including connect, disconect, broadcast and etc.
+Crafty is used as an engine to prepare the game part. We are talking about sprites, maps, actions, components and entities.
+This example is so simple, it considers a user that input your name and generate a hero entity in our map.
+
+A preload is used to load all sprite information. In this case we only using images, but it could be sounds too.
+
+In order to test, just execute the following in your console:
+
+>> node app.js
+
+There are still things missing in this examples.
+
+1st problem - NPCs can move, but cant animate themselves.
+
+I create a function to create NPCs representing another players, but my gap is when i have to attach a enterframe event to this NPC Entity. When i do it, the enterframe cannot gather the HeroInformation from server and decides to which side it will animate.
+Test by yourself with 2 clients and you will understand.
