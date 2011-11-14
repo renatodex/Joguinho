@@ -10,8 +10,39 @@ In order to test, just execute the following in your console:
 >> node app.js
 
 There are still things missing in this examples.
+I will talk about the problems i have found..
 
-1st problem - NPCs can move, but cant animate themselves.
+--------------------------
+1st problem (SOLVED) - NPCs can move, but cant animate themselves.
 
 I create a function to create NPCs representing another players, but my gap is when i have to attach a enterframe event to this NPC Entity. When i do it, the enterframe cannot gather the HeroInformation from server and decides to which side it will animate.
 Test by yourself with 2 clients and you will understand.
+
+SOLUTION: Removed NPC Set at keydown of hero controls.
+----------------------------
+2nd problem (NOT SOLVE) - Third NPC cant see the Second player.
+
+For some reason, when a log with the third character, this third cannot see the Second one. However, the First and Second chars can see the Third appearing in the game scene. Problably the fix is easy, but i didnt focused on this one yet.
+
+SOLUTION: Not found yet
+----------------------------
+3rd problem (NOT SOLVED) - When the third npc moves, the Animation Sprite of second one is activated.
+
+Probably theres some ID used for animation that i using the same for all of them, but i cant figure out what happening yet.
+Atm i working in this bug, i will see if i can solved it easy.
+
+SOLUTION: Not found yet
+----------------------------
+4th problem (NOT SOLVED) - While testing 2~3 clients at firefox simultaneously, MacPro processing power goes to 100%+.
+
+I tested in Firefox and Safari.
+Firefox: 1client=40% | 2clients=80% | 3clients=100%+
+Safari: 1client=20% | 2clients=50% | 3clients=80%-90%
+
+I was wondering if theres something i can do at my code to reduce the browser processing while dealing with sockets.
+I still need to test if it happens with 2 clients interacting from different machines.
+
+SOLUTION: Not found yet
+-----------------------------
+
+Any help is apreciated!
