@@ -141,7 +141,13 @@ io.sockets.on('connection', function (socket) {
   socket.on('listHeroes', function() {
     console.log("--# Listando Herois Online #--");
     for(i=0; i < myHeroesList.length; i++) {
-      console.log(i + " - " + myHeroesList[i].name);
+      console.log(
+        i + " - " + myHeroesList[i].name + " - " + 
+        myHeroesList[i].x + " - " + 
+        myHeroesList[i].y + " - " + 
+        myHeroesList[i].movingLeft + " - " + 
+        myHeroesList[i].movingRight
+      );
     }
     console.log("--# Fim da listagem #--");
   });
@@ -184,10 +190,27 @@ io.sockets.on('connection', function (socket) {
     );
   });
 
+  socket.on('aHeroHasStoped', function(heroName, x, y) {
+    heroFound = myHeroesObj.getHeroByName(heroName);
+    heroFound.x = x;
+    heroFound.y = y;
+    heroFound.movingLeft = false;
+    heroFound.movingRight = false;
+    socket.broadcast.emit(
+      'aHeroHasStoped',
+      heroName,x,y,heroFound.movingLeft,heroFound.movingRight
+    );
+  })
+
   //-evento disparado quando um heroi aparece no jogo.
   // ele APENAS acontece com um heroi que JA está no jogo.
   socket.on('newHeroHasCome', function(heroName, x, y) {
     socket.broadcast.emit('newHeroHasCome', heroName, x, y);
+  });
+
+
+  socket.on('printlog', function(message) {
+    console.log(message);
   });
 });
 

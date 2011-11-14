@@ -59,17 +59,7 @@ window.onload = function() {
     Crafty.background("url('/images/background.jpg')");
 
   	
-      Crafty.c('NPCReferencesHero', {
-      	_heroName: null,
-      	_npcinfo: null,
 
-      	NPCReferencesHero: function(heroName) {
-      		this._heroName = heroName;
-      		this._npcinfo = myNPCObj.getNPCByName(this._heroName);
-
-      		return this;
-      	}
-      });
 
 	  // Antes de criar o heroi, criamos um componente que irá controla-lo
 	  Crafty.c('HeroiControls', {
@@ -88,7 +78,7 @@ window.onload = function() {
             // Metodo enterframe que faz o efeito de movimento
 	  		this.bind('enterframe', function() {
 	  			//alert(myNPCData);
-	  				//alert(this.x +"---"+myNPCData.x);
+	  		  //alert(this.x +"---"+myNPCData.x);
 	  			if(mover.esquerda) this.x -= velocidade;
 	  			if(mover.direita) this.x += velocidade;
 
@@ -119,8 +109,10 @@ window.onload = function() {
 	            if(teclaPressionada == Crafty.keys.LA)
 	              mover.esquerda = true;
 
-		  					foundNPC.movingLeft = mover.esquerda;
-		  					foundNPC.movingRight = mover.direita;
+                // bug: quando o 2o. andava, dizia que o primeiro
+                // que tava andando
+		  					//foundNPC.movingLeft = mover.esquerda;
+		  					//foundNPC.movingRight = mover.direita;
 
 	            this.preventTypeaheadFind(e);
 	  		});
@@ -133,6 +125,19 @@ window.onload = function() {
 	  			  mover.direita = false;
 	  			if(tecla == Crafty.keys.LA)
 	  			  mover.esquerda = false;
+
+            socket.emit("aHeroHasStoped", myHeroName, this.x, this.y);
+            socket.on("aHeroHasStoped", function(heroName, x, y, movingLeft, movingRight) {
+              //if(heroName != myHeroName) {
+                foundNPC = myNPCObj.getNPCByName(heroName);
+                if(foundNPC) {
+                foundNPC.gameObj.x = x;
+                foundNPC.gameObj.y = y;
+                foundNPC.movingLeft = movingLeft;
+                foundNPC.movingRight = movingRight;
+              }
+              //}
+            });
 
 	  			this.preventTypeaheadFind(e);
 	  		});
@@ -174,9 +179,9 @@ window.onload = function() {
       message = "";
       for(i=0;i<heroesList.length;i++) {
         heroInfo = heroesList[i];
-        if(heroInfo.name === myHeroName) { continue; }
-        
+        if(heroInfo.name != myHeroName) {
         createNPC(heroInfo.name, heroInfo.x,heroInfo.y);
+        }
       };
     });   
 
@@ -189,23 +194,52 @@ window.onload = function() {
     	  createNPC(heroName, x, y);
     });
 
+
+  Crafty.c('NPCReferencesHero', {
+    _heroName: null,
+    _npcinfo: null,
+
+    NPCReferencesHero: function(heroName) {
+      this._heroName = heroName;
+
+      myNPCObj.createNPC(this._heroName, this);
+      this._npcinfo = myNPCObj.getNPCByName(this._heroName);
+
+      return this;
+    }
+  });
+
   function createNPC(heroName, px, py) {
     npcGameObj = Crafty.e("2D, DOM, npc, controls, NPCReferencesHero, animate")
     .attr({x:px,y:py,z:0})
-    .animate("andar_direita", 0,2,2)
-    .animate("andar_esquerda", 0,1,2);
-
-    myNPCObj.createNPC(heroName, npcGameObj);
-
-    npcGameObj.NPCReferencesHero(heroName);
-    npcGameObj.bind("enterframe", function(e) {
-    	if(this._npcinfo.movingLeft && !this.isPlaying("andar_esquerda"))
-    	  this.stop().animate("andar_esquerda",10);
-    	if(this._npcinfo.movingRight && !this.isPlaying("andar_direita"))
-    	  this.stop().animate("andar_direita",10);
-    	if(!this._npcinfo.movingLeft && !this._npcinfo.movingRight)
-	   	  this.stop();
+    .animate("andar_direita_"+heroName, 0,2,2)
+    .animate("andar_esquerda_"+heroName, 0,1,2)
+    .NPCReferencesHero(heroName)
+    .bind("enterframe", function(e) {
+      socket.emit('printlog', ">> NPC:"+heroName+"|"+this._npcinfo.gameObj.x+"|"+this._npcinfo.movingLeft+"|"+this._npcinfo.movingRight);
+      if(this._npcinfo.movingLeft && !this.isPlaying("andar_esquerda_"+heroName))
+        this.animate("andar_esquerda_"+heroName,10);
+      if(this._npcinfo.movingRight && !this.isPlaying("andar_direita_"+heroName))
+        this.animate("andar_direita_"+heroName,10);
+      // if(!this._npcinfo.movingLeft && !this._npcinfo.movingRight)
+      //   this.stop();
     });
+    // .bind("enterframe", function(e) {
+    //   if(!npcVarObj)
+    //     socket.emit('printlog', ">> O NPC "+heroName+" esta iterando..");
+    //   else
+    //     socket.emit('printlog', ">> O NPC "+heroName+"/"+this._npcinfo.x+" esta iterando...");
+    // });
+    //'+this._heroName+'
+    // if(this._npcinfo.movingLeft && !this.isPlaying("andar_esquerda"))
+    //   this.stop().animate("andar_esquerda",10);
+    // if(this._npcinfo.movingRight && !this.isPlaying("andar_direita"))
+    //   this.stop().animate("andar_direita",10);
+    // if(!this._npcinfo.movingLeft && !this._npcinfo.movingRight)
+    //   this.stop();
+    // npcGameObj.NPCReferencesHero(heroName);
+
+    //myNPCObj.createNPC(heroName, npcGameObj);
   }
 
   $("#btn-listnpcs").click(function() {
@@ -286,4 +320,5 @@ window.onload = function() {
 
     // Aqui finalmente disparamos a aplicação
     Crafty.scene("preload");
+
 }
