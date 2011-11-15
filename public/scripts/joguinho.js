@@ -169,7 +169,7 @@ window.onload = function() {
     }).bind("keyup", function(e) {
     	this.stop();
     });
-    myNPCObj.createNPC(myHeroName, myHeroGameObj);
+    //myNPCObj.createNPC(myHeroName, myHeroGameObj);
 
     // Este evento é o PRÉ-PROCESSAMENTO para criar novos herois.
     // Quando um heroi entra, verificamos quais herois ja estao no jogo
@@ -177,12 +177,17 @@ window.onload = function() {
     // CASE: Voce vai entrar e ja tem gente na sala
     socket.emit('getHeroesList', function(heroesList) {
       message = "";
+      socket.emit('printlog','---# Inicia criacao de Herois #---');
+      socket.emit('printlog','>> Total de herois encontrados: '+heroesList.length);
       for(i=0;i<heroesList.length;i++) {
         heroInfo = heroesList[i];
+
         if(heroInfo.name != myHeroName) {
+        socket.emit('printlog',">> Criando heroi ("+heroInfo.name+","+heroInfo.x+","+heroInfo.y+")");
         createNPC(heroInfo.name, heroInfo.x,heroInfo.y);
         }
-      };
+      }
+      socket.emit('printlog','---# Finaliza criacao de Herois #---');
     });   
 
     // Este é basicamente o POS-PROCESSAMENTO para criar novos herois.
@@ -216,30 +221,12 @@ window.onload = function() {
     .animate("andar_esquerda_"+heroName, 0,1,2)
     .NPCReferencesHero(heroName)
     .bind("enterframe", function(e) {
-      socket.emit('printlog', ">> NPC:"+heroName+"|"+this._npcinfo.gameObj.x+"|"+this._npcinfo.movingLeft+"|"+this._npcinfo.movingRight);
+      // socket.emit('printlog', ">> NPC:"+heroName+"|"+this._npcinfo.gameObj.x+"|"+this._npcinfo.movingLeft+"|"+this._npcinfo.movingRight);
       if(this._npcinfo.movingLeft && !this.isPlaying("andar_esquerda_"+heroName))
         this.animate("andar_esquerda_"+heroName,10);
       if(this._npcinfo.movingRight && !this.isPlaying("andar_direita_"+heroName))
         this.animate("andar_direita_"+heroName,10);
-      // if(!this._npcinfo.movingLeft && !this._npcinfo.movingRight)
-      //   this.stop();
     });
-    // .bind("enterframe", function(e) {
-    //   if(!npcVarObj)
-    //     socket.emit('printlog', ">> O NPC "+heroName+" esta iterando..");
-    //   else
-    //     socket.emit('printlog', ">> O NPC "+heroName+"/"+this._npcinfo.x+" esta iterando...");
-    // });
-    //'+this._heroName+'
-    // if(this._npcinfo.movingLeft && !this.isPlaying("andar_esquerda"))
-    //   this.stop().animate("andar_esquerda",10);
-    // if(this._npcinfo.movingRight && !this.isPlaying("andar_direita"))
-    //   this.stop().animate("andar_direita",10);
-    // if(!this._npcinfo.movingLeft && !this._npcinfo.movingRight)
-    //   this.stop();
-    // npcGameObj.NPCReferencesHero(heroName);
-
-    //myNPCObj.createNPC(heroName, npcGameObj);
   }
 
   $("#btn-listnpcs").click(function() {
